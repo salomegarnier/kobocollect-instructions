@@ -11,8 +11,8 @@
       --text: #1f2937;
       --muted: #6b7280;
       --border: #d8dee9;
-      --primary: #2490EB;
-      --primary-dark: #1b76c4;
+      --primary: #1B6DB5;
+      --primary-dark: #14578f;
       --soft-primary: #eaf4ff;
       --warning-bg: #fff8e6;
       --warning-border: #f5c542;
@@ -34,7 +34,7 @@
     }
 
     header {
-      background: linear-gradient(135deg, #2490EB, #1b76c4);
+      background: linear-gradient(135deg, #1B6DB5, #14578f);
       color: white;
       padding: 3rem 1.5rem;
     }
@@ -151,6 +151,10 @@
       margin-top: 1.25rem;
     }
 
+    .result-actions {
+      margin-bottom: 2.25rem;
+    }
+
     button {
       border: 0;
       border-radius: 999px;
@@ -188,11 +192,11 @@
     }
 
     .summary {
-      background: var(--soft-primary);
-      border: 1px solid #b8d8ff;
+      background: var(--card);
+      border: 0;
       border-radius: 14px;
-      padding: 1rem;
-      margin-bottom: 1rem;
+      padding: 0;
+      margin: 0;
     }
 
     .summary h3 {
@@ -408,10 +412,12 @@
       </form>
     </section>
 
-    <section id="resultCard" class="card hidden">
+    <section id="summaryCard" class="card hidden">
       <div id="summary" class="summary"></div>
+    </section>
 
-      <div class="actions">
+    <section id="resultCard" class="card hidden">
+      <div class="actions result-actions">
         <button type="button" id="copyButton" class="primary">Copy instructions</button>
         <button type="button" id="printButton" class="secondary">Print instructions</button>
         <span id="copyStatus" class="copied hidden">Copied!</span>
@@ -838,7 +844,7 @@
         : LABELS.automaticDownload.notApplicable;
 
       summary.innerHTML = `
-        <h3>Selected scenario</h3>
+        <h2>Selected project configuration</h2>
         <ul>
           <li><strong>Form management settings:</strong> ${LABELS.defaultSettings[settings.defaultSettings]}</li>
           ${settings.defaultSettings === "no" ? `
@@ -865,9 +871,10 @@
         ${blocks}
       `;
 
+      document.getElementById("summaryCard").classList.remove("hidden");
       document.getElementById("resultCard").classList.remove("hidden");
       document.getElementById("copyStatus").classList.add("hidden");
-      document.getElementById("resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("summaryCard").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function getPlainTextInstructions() {
@@ -931,6 +938,7 @@
       form.reset();
       customSettingsQuestions.classList.add("hidden");
       automaticDownloadQuestion.classList.add("hidden");
+      document.getElementById("summaryCard").classList.add("hidden");
       document.getElementById("resultCard").classList.add("hidden");
       setRequiredForCustomQuestions(false);
       setRequiredForAutomaticDownload(false);
