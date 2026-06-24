@@ -6,14 +6,14 @@
   <title>KoboCollect Instructions Wizard</title>
   <style>
     :root {
-      --bg: #f6f8fb;
+      --bg: #F0F4FA;
       --card: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
       --border: #d8dee9;
-      --primary: #0066cc;
-      --primary-dark: #004f9e;
-      --soft-primary: #e8f2ff;
+      --primary: #2490EB;
+      --primary-dark: #1b76c4;
+      --soft-primary: #eaf4ff;
       --warning-bg: #fff8e6;
       --warning-border: #f5c542;
       --success-bg: #eafaf1;
@@ -34,7 +34,7 @@
     }
 
     header {
-      background: linear-gradient(135deg, #003f7d, #0066cc);
+      background: linear-gradient(135deg, #2490EB, #1b76c4);
       color: white;
       padding: 3rem 1.5rem;
     }
@@ -301,9 +301,7 @@
     <section class="card intro-card">
       <h2>How to use this tool</h2>
       <p>
-        This wizard is designed for project admins preparing field guidance for data collectors.
-        It generates instructions based on the selected Blank form update mode, Automatic download setting,
-        and Auto send setting.
+        Answer the questions below to generate tailored KoboCollect instructions for data collectors.
       </p>
       <div class="intro-grid">
         <div class="mini-card">
@@ -322,14 +320,12 @@
     </section>
 
     <section class="card quiz-card">
-      <h2>Settings quiz</h2>
+      <h2>KoboCollect project settings</h2>
 
       <form id="settingsForm">
         <div class="question">
           <fieldset>
             <legend>Are you using the default form management settings in KoboCollect?</legend>
-            <p class="hint">Choose “Yes” if you did not change the form management settings.</p>
-
             <label class="option">
               <input type="radio" name="defaultSettings" value="yes" required />
               <span>Yes, I am using the default form management settings.</span>
@@ -482,7 +478,7 @@
           <p>To download forms to your device:</p>
           <ol>
             <li>From the main menu, tap <strong>Download form</strong>.</li>
-            <li>Select the form(s) you wish to download individually by tapping the checkbox next to each form, or tap <strong>Select All</strong> to download all deployed forms.</li>
+            <li>Select the form(s) you want to download, or tap <strong>Select All</strong> to download all deployed forms.</li>
             <li>Tap <strong>Get Selected</strong>.</li>
           </ol>
           <p>Downloaded forms will appear when you tap <strong>Start new form</strong> from the app main menu.</p>
@@ -495,7 +491,7 @@
           <p>To begin data collection, you first need to download each form manually:</p>
           <ol>
             <li>From the main menu, tap <strong>Download form</strong>.</li>
-            <li>Select the form(s) you wish to download individually by tapping the checkbox next to each form, or tap <strong>Select All</strong> to download all deployed forms.</li>
+            <li>Select the form(s) you want to download, or tap <strong>Select All</strong> to download all deployed forms.</li>
             <li>Tap <strong>Get Selected</strong>.</li>
           </ol>
           <p>Downloaded forms will appear when you tap <strong>Start new form</strong> from the app main menu.</p>
@@ -509,7 +505,7 @@
           <p>To begin data collection, you first need to download each form manually:</p>
           <ol>
             <li>From the main menu, tap <strong>Download form</strong>.</li>
-            <li>Select the form(s) you wish to download individually by tapping the checkbox next to each form, or tap <strong>Select All</strong> to download all deployed forms.</li>
+            <li>Select the form(s) you want to download, or tap <strong>Select All</strong> to download all deployed forms.</li>
             <li>Tap <strong>Get Selected</strong>.</li>
           </ol>
           <p>Downloaded forms will appear when you tap <strong>Start new form</strong> from the app main menu.</p>
@@ -564,7 +560,7 @@
             <li>Navigate through questions by swiping left or tapping <strong>NEXT</strong> after answering.</li>
             <li>At the end of the survey, you can choose to <strong>Save as draft</strong> or <strong>Send</strong>.</li>
           </ol>
-          <p>If you tap <strong>Send</strong> while the device is connected to the internet, the form will be sent to the server immediately. If there is no internet connection, the form will be queued and sent automatically when the device reconnects.</p>
+          <p>If you tap <strong>Send</strong>, the form will be sent immediately if the selected connection type is available. Otherwise, it will be queued and sent automatically when the device reconnects.</p>
         `
       },
 
@@ -579,7 +575,7 @@
             <li>Navigate through questions by swiping left or tapping <strong>NEXT</strong> after answering.</li>
             <li>At the end of the survey, you can choose to <strong>Save as draft</strong> or <strong>Send</strong>.</li>
           </ol>
-          <p>If you tap <strong>Send</strong> while the device is connected to the internet, the form will be sent to the server immediately. If there is no internet connection, the form will be queued and sent automatically when the device reconnects.</p>
+          <p>If you tap <strong>Send</strong>, the form will be sent immediately if the selected connection type is available. Otherwise, it will be queued and sent automatically when the device reconnects.</p>
         `
       },
 
@@ -626,9 +622,9 @@
 
       sendAuto: {
         title: "Sending finalized forms to the server",
-        content: `
+        content: (settings) => `
           <p>With auto send enabled, finalized forms are sent to the server automatically. You do not need to open <strong>Ready to send</strong> or manually upload finalized forms.</p>
-          <p>If the device is connected to the internet when the form is completed, it will be sent immediately. If the device is offline, the form will remain queued and will be sent automatically when an internet connection becomes available.</p>
+          <p>${getAutoSendConnectionText(settings.autoSend)}</p>
           <p>To verify successful upload, go to the main menu and select <strong>Sent</strong>. You will see all forms sent to the server, along with their synchronization date.</p>
         `
       },
@@ -819,6 +815,22 @@
       return null;
     }
 
+    function getAutoSendConnectionText(autoSend) {
+      if (autoSend === "wifiOnly") {
+        return "If the device is connected to Wi-Fi when the form is completed, it will be sent immediately. If the device is offline or not connected to Wi-Fi, the form will remain queued and will be sent automatically when a Wi-Fi connection becomes available.";
+      }
+
+      if (autoSend === "cellularOnly") {
+        return "If the device is connected to a cellular network when the form is completed, it will be sent immediately. If the device is offline or not connected to a cellular network, the form will remain queued and will be sent automatically when a cellular connection becomes available.";
+      }
+
+      if (autoSend === "wifiOrCellular") {
+        return "If the device is connected to Wi-Fi or a cellular network when the form is completed, it will be sent immediately. If the device is offline, the form will remain queued and will be sent automatically when an internet connection becomes available.";
+      }
+
+      return "If the device is connected to the internet when the form is completed, it will be sent immediately. If the device is offline, the form will remain queued and will be sent automatically when an internet connection becomes available.";
+    }
+
     function renderScenario(scenarioKey, settings) {
       const scenario = SCENARIOS[scenarioKey];
       const output = document.getElementById("instructionsOutput");
@@ -831,7 +843,6 @@
       summary.innerHTML = `
         <h3>Selected scenario</h3>
         <ul>
-          <li><strong>Generated instructions:</strong> ${scenario.title}</li>
           <li><strong>Form management settings:</strong> ${LABELS.defaultSettings[settings.defaultSettings]}</li>
           ${settings.defaultSettings === "no" ? `
             <li><strong>Blank form update mode:</strong> ${LABELS.blankFormUpdateMode[settings.blankFormUpdateMode]}</li>
@@ -843,19 +854,17 @@
 
       const blocks = scenario.blocks.map(blockKey => {
         const block = INSTRUCTION_BLOCKS[blockKey];
+        const content = typeof block.content === "function" ? block.content(settings) : block.content;
         return `
           <section class="section">
             <h3>${block.title}</h3>
-            ${block.content}
+            ${content}
           </section>
         `;
       }).join("");
 
       output.innerHTML = `
         <h2>Instructions for data collectors</h2>
-        <div class="notice success">
-          <strong>Scenario:</strong> ${scenario.title}
-        </div>
         ${blocks}
       `;
 
