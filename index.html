@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KoboCollect Instructions Wizard</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d8dee9;
+      --primary: #0066cc;
+      --primary-dark: #004f9e;
+      --soft-primary: #e8f2ff;
+      --warning-bg: #fff8e6;
+      --warning-border: #f5c542;
+      --success-bg: #eafaf1;
+      --success-border: #2ca66a;
+      --shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    header {
+      background: linear-gradient(135deg, #003f7d, #0066cc);
+      color: white;
+      padding: 3rem 1.5rem;
+    }
+
+    header .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      margin: 0 0 0.75rem;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.1;
+    }
+
+    header p {
+      margin: 0;
+      max-width: 760px;
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+
+    main {
+      max-width: 980px;
+      margin: -2rem auto 4rem;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .mini-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+      background: #fbfcfe;
+    }
+
+    .mini-card strong {
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+
+    .question {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .question:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+
+    legend {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: -0.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    label.option {
+      display: flex;
+      gap: 0.7rem;
+      align-items: flex-start;
+      padding: 0.75rem;
+      margin: 0.45rem 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    label.option:hover {
+      border-color: var(--primary);
+      background: var(--soft-primary);
+    }
+
+    input[type="radio"] {
+      margin-top: 0.2rem;
+      accent-color: var(--primary);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.75rem 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    button.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    button.secondary {
+      background: #eef2f7;
+      color: var(--text);
+    }
+
+    button.secondary:hover {
+      background: #e1e7f0;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .summary {
+      background: var(--soft-primary);
+      border: 1px solid #b8d8ff;
+      border-radius: 14px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .summary h3 {
+      margin-top: 0;
+    }
+
+    .summary ul {
+      margin-bottom: 0;
+    }
+
+    .notice {
+      border-radius: 14px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .notice.warning {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+    }
+
+    .notice.success {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+    }
+
+    .instructions h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+
+    .instructions h3 {
+      margin-top: 1.4rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+
+    .instructions ol,
+    .instructions ul {
+      padding-left: 1.3rem;
+    }
+
+    .instructions li {
+      margin: 0.35rem 0;
+    }
+
+    .instructions p {
+      margin: 0.6rem 0;
+    }
+
+    .instructions .section {
+      margin-bottom: 1.1rem;
+    }
+
+    .copied {
+      color: #166534;
+      font-weight: 700;
+      margin-left: 0.25rem;
+    }
+
+    footer {
+      max-width: 980px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media print {
+      header,
+      .quiz-card,
+      .actions,
+      footer,
+      .intro-card {
+        display: none !important;
+      }
+
+      main {
+        margin: 0;
+        max-width: none;
+      }
+
+      .card {
+        box-shadow: none;
+        border: 0;
+      }
+
+      body {
+        background: white;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>KoboCollect Instructions Wizard</h1>
+      <p>
+        Answer a few questions about the KoboCollect form management settings enabled for your project.
+        The tool will generate the correct instructions to share with data collectors.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card intro-card">
+      <h2>How to use this tool</h2>
+      <p>
+        This wizard is designed for project admins preparing field guidance for data collectors.
+        It generates instructions based on the selected Blank form update mode, Automatic download setting,
+        and Auto send setting.
+      </p>
+      <div class="intro-grid">
+        <div class="mini-card">
+          <strong>Step 1</strong>
+          Answer the questions about your KoboCollect settings.
+        </div>
+        <div class="mini-card">
+          <strong>Step 2</strong>
+          Review the generated instructions.
+        </div>
+        <div class="mini-card">
+          <strong>Step 3</strong>
+          Copy or print the instructions for your data collectors.
+        </div>
+      </div>
+    </section>
+
+    <section class="card quiz-card">
+      <h2>Settings quiz</h2>
+
+      <form id="settingsForm">
+        <div class="question">
+          <fieldset>
+            <legend>Are you using the default form management settings in KoboCollect?</legend>
+            <p class="hint">Choose “Yes” if you did not change the form management settings.</p>
+
+            <label class="option">
+              <input type="radio" name="defaultSettings" value="yes" required />
+              <span>Yes, I am using the default form management settings.</span>
+            </label>
+
+            <label class="option">
+              <input type="radio" name="defaultSettings" value="no" />
+              <span>No, I changed the default form management settings.</span>
+            </label>
+          </fieldset>
+        </div>
+
+        <div id="customSettingsQuestions" class="hidden">
+          <div class="question">
+            <fieldset>
+              <legend>Which Blank form update mode did you select?</legend>
+
+              <label class="option">
+                <input type="radio" name="blankFormUpdateMode" value="manual" />
+                <span>Manual</span>
+              </label>
+
+              <label class="option">
+                <input type="radio" name="blankFormUpdateMode" value="previouslyDownloaded" />
+                <span>Previously downloaded forms only</span>
+              </label>
+
+              <label class="option">
+                <input type="radio" name="blankFormUpdateMode" value="exactlyMatchServer" />
+                <span>Exactly match server</span>
+              </label>
+            </fieldset>
+          </div>
+
+          <div id="automaticDownloadQuestion" class="question hidden">
+            <fieldset>
+              <legend>Did you select Automatic download?</legend>
+              <p class="hint">This only applies when Blank form update mode is set to “Previously downloaded forms only”.</p>
+
+              <label class="option">
+                <input type="radio" name="automaticDownload" value="yes" />
+                <span>Yes</span>
+              </label>
+
+              <label class="option">
+                <input type="radio" name="automaticDownload" value="no" />
+                <span>No</span>
+              </label>
+            </fieldset>
+          </div>
+
+          <div class="question">
+            <fieldset>
+              <legend>Which Auto send option did you select?</legend>
+
+              <label class="option">
+                <input type="radio" name="autoSend" value="off" />
+                <span>Off</span>
+              </label>
+
+              <label class="option">
+                <input type="radio" name="autoSend" value="wifiOnly" />
+                <span>Wi-Fi only</span>
+              </label>
+
+              <label class="option">
+                <input type="radio" name="autoSend" value="cellularOnly" />
+                <span>Cellular only</span>
+              </label>
+
+              <label class="option">
+                <input type="radio" name="autoSend" value="wifiOrCellular" />
+                <span>Wi-Fi or cellular</span>
+              </label>
+            </fieldset>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="primary">Generate instructions</button>
+          <button type="button" id="resetButton" class="secondary">Reset</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="resultCard" class="card hidden">
+      <div id="summary" class="summary"></div>
+
+      <div class="actions">
+        <button type="button" id="copyButton" class="primary">Copy instructions</button>
+        <button type="button" id="printButton" class="secondary">Print instructions</button>
+        <span id="copyStatus" class="copied hidden">Copied!</span>
+      </div>
+
+      <article id="instructionsOutput" class="instructions"></article>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Tip: To update this tool later, edit the SCENARIOS and INSTRUCTION_BLOCKS objects in the JavaScript section of this file.
+    </p>
+  </footer>
+
+  <script>
+    /*
+      ============================================================
+      EDITABLE DECISION LOGIC
+      ============================================================
+
+      Scenario rules:
+      - Default settings always produce instructions1.
+      - Manual + Auto send off produces instructions1.
+      - Manual + any Auto send option other than off produces instructions2.
+      - Previously downloaded forms only + Automatic download yes + Auto send off produces instructions3.
+      - Previously downloaded forms only + Automatic download no + Auto send off produces instructions4.
+      - Previously downloaded forms only + Automatic download yes + Auto send on produces instructions5.
+      - Previously downloaded forms only + Automatic download no + Auto send on produces instructions6.
+      - Exactly match server + Auto send off produces instructions7.
+      - Exactly match server + Auto send on produces instructions8.
+    */
+
+    const LABELS = {
+      defaultSettings: {
+        yes: "Default form management settings",
+        no: "Custom form management settings"
+      },
+      blankFormUpdateMode: {
+        manual: "Manual",
+        previouslyDownloaded: "Previously downloaded forms only",
+        exactlyMatchServer: "Exactly match server"
+      },
+      automaticDownload: {
+        yes: "Yes",
+        no: "No",
+        notApplicable: "Not applicable"
+      },
+      autoSend: {
+        off: "Off",
+        wifiOnly: "Wi-Fi only",
+        cellularOnly: "Cellular only",
+        wifiOrCellular: "Wi-Fi or cellular"
+      }
+    };
+
+    const INSTRUCTION_BLOCKS = {
+      downloadManualDefault: {
+        title: "Downloading forms",
+        content: `
+          <p>To download forms to your device:</p>
+          <ol>
+            <li>From the main menu, tap <strong>Download form</strong>.</li>
+            <li>Select the form(s) you wish to download individually by tapping the checkbox next to each form, or tap <strong>Select All</strong> to download all deployed forms.</li>
+            <li>Tap <strong>Get Selected</strong>.</li>
+          </ol>
+          <p>Downloaded forms will appear when you tap <strong>Start new form</strong> from the app main menu.</p>
+        `
+      },
+
+      downloadPreviouslyDownloadedAuto: {
+        title: "Downloading forms",
+        content: `
+          <p>To begin data collection, you first need to download each form manually:</p>
+          <ol>
+            <li>From the main menu, tap <strong>Download form</strong>.</li>
+            <li>Select the form(s) you wish to download individually by tapping the checkbox next to each form, or tap <strong>Select All</strong> to download all deployed forms.</li>
+            <li>Tap <strong>Get Selected</strong>.</li>
+          </ol>
+          <p>Downloaded forms will appear when you tap <strong>Start new form</strong> from the app main menu.</p>
+          <p>Once a form has been downloaded to the device, KoboCollect will check for updates to that form at the automatic update frequency configured in the project settings. If an update is available, the updated version will download automatically when the device is connected to the internet.</p>
+        `
+      },
+
+      downloadPreviouslyDownloadedNotify: {
+        title: "Downloading forms",
+        content: `
+          <p>To begin data collection, you first need to download each form manually:</p>
+          <ol>
+            <li>From the main menu, tap <strong>Download form</strong>.</li>
+            <li>Select the form(s) you wish to download individually by tapping the checkbox next to each form, or tap <strong>Select All</strong> to download all deployed forms.</li>
+            <li>Tap <strong>Get Selected</strong>.</li>
+          </ol>
+          <p>Downloaded forms will appear when you tap <strong>Start new form</strong> from the app main menu.</p>
+          <p>Once a form has been downloaded to the device, KoboCollect will check for updates to that form at the automatic update frequency configured in the project settings. If an update is available, users will be notified, but the update will not download automatically.</p>
+        `
+      },
+
+      downloadExactlyMatchServer: {
+        title: "Downloading forms",
+        content: `
+          <p>When the project is set to exactly match the server, KoboCollect automatically downloads all forms shared with the account and keeps them updated based on changes to the server.</p>
+          <p>You do not need to manually download forms from <strong>Download form</strong>. Forms available on the server will appear when you tap <strong>Start new form</strong> from the app main menu, after KoboCollect has connected to the internet and synchronized with the server.</p>
+        `
+      },
+
+      collectFinalize: {
+        title: "Collecting data",
+        content: `
+          <p>Once forms are downloaded, you can begin data collection. Note that once you have downloaded the form(s) in the app, you do not need an internet connection to collect data.</p>
+          <ol>
+            <li>From the main menu, tap <strong>Start new form</strong>.</li>
+            <li>Select the form you wish to collect data with.</li>
+            <li>To change the form language, tap the three dots icon in the top right corner of the screen and tap <strong>Change Language</strong>.</li>
+            <li>Navigate through questions by swiping left or tapping <strong>NEXT</strong> after answering.</li>
+            <li>At the end of the survey, you can choose to <strong>Save as draft</strong> or <strong>Finalize</strong>.</li>
+          </ol>
+        `
+      },
+
+      collectFinalizeExactlyMatchServer: {
+        title: "Collecting data",
+        content: `
+          <p>Once forms are available on the device, you can begin data collection. Note that once the form(s) have been downloaded in the app, you do not need an internet connection to collect data.</p>
+          <ol>
+            <li>From the main menu, tap <strong>Start new form</strong>.</li>
+            <li>Select the form you wish to collect data with.</li>
+            <li>To change the form language, tap the three dots icon in the top right corner of the screen and tap <strong>Change Language</strong>.</li>
+            <li>Navigate through questions by swiping left or tapping <strong>NEXT</strong> after answering.</li>
+            <li>At the end of the survey, you can choose to <strong>Save as draft</strong> or <strong>Finalize</strong>.</li>
+          </ol>
+        `
+      },
+
+      collectSend: {
+        title: "Collecting data",
+        content: `
+          <p>Once forms are downloaded, you can begin data collection. Note that once you have downloaded the form(s) in the app, you do not need an internet connection to collect data.</p>
+          <ol>
+            <li>From the main menu, tap <strong>Start new form</strong>.</li>
+            <li>Select the form you wish to collect data with.</li>
+            <li>To change the form language, tap the three dots icon in the top right corner of the screen and tap <strong>Change Language</strong>.</li>
+            <li>Navigate through questions by swiping left or tapping <strong>NEXT</strong> after answering.</li>
+            <li>At the end of the survey, you can choose to <strong>Save as draft</strong> or <strong>Send</strong>.</li>
+          </ol>
+          <p>If you tap <strong>Send</strong> while the device is connected to the internet, the form will be sent to the server immediately. If there is no internet connection, the form will be queued and sent automatically when the device reconnects.</p>
+        `
+      },
+
+      collectSendExactlyMatchServer: {
+        title: "Collecting data",
+        content: `
+          <p>Once forms are available on the device, you can begin data collection. Note that once the form(s) have been downloaded in the app, you do not need an internet connection to collect data.</p>
+          <ol>
+            <li>From the main menu, tap <strong>Start new form</strong>.</li>
+            <li>Select the form you wish to collect data with.</li>
+            <li>To change the form language, tap the three dots icon in the top right corner of the screen and tap <strong>Change Language</strong>.</li>
+            <li>Navigate through questions by swiping left or tapping <strong>NEXT</strong> after answering.</li>
+            <li>At the end of the survey, you can choose to <strong>Save as draft</strong> or <strong>Send</strong>.</li>
+          </ol>
+          <p>If you tap <strong>Send</strong> while the device is connected to the internet, the form will be sent to the server immediately. If there is no internet connection, the form will be queued and sent automatically when the device reconnects.</p>
+        `
+      },
+
+      editDraftFinalize: {
+        title: "Editing drafts",
+        content: `
+          <p>If you saved a survey as a draft, you can edit it before sending it to the server:</p>
+          <ol>
+            <li>From the main menu, select <strong>Drafts</strong>.</li>
+            <li>A list of saved draft forms will appear. Select the one you want to edit.</li>
+            <li>Make the necessary changes, then tap <strong>Finalize</strong>.</li>
+          </ol>
+          <p><strong>Note:</strong> You do not need an internet connection to edit a saved form in KoboCollect.</p>
+        `
+      },
+
+      editDraftSend: {
+        title: "Editing drafts",
+        content: `
+          <p>If you saved a survey as a draft, you can edit it before sending it to the server:</p>
+          <ol>
+            <li>From the main menu, select <strong>Drafts</strong>.</li>
+            <li>A list of saved draft forms will appear. Select the one you want to edit.</li>
+            <li>Make the necessary changes, then tap <strong>Send</strong>.</li>
+          </ol>
+          <p><strong>Note:</strong> You do not need an internet connection to edit a saved form in KoboCollect.</p>
+        `
+      },
+
+      sendManual: {
+        title: "Sending finalized forms to the server",
+        content: `
+          <p>After finalizing your forms, you must upload them to the KoboToolbox server. Forms are often completed and finalized offline, then uploaded in bulk once an internet connection is available.</p>
+          <p>To send your forms to the KoboToolbox server:</p>
+          <ol>
+            <li>Ensure the device has a secure internet connection.</li>
+            <li>From the main menu, tap <strong>Ready to send</strong>. A list of finalized forms will appear.</li>
+            <li>Tap <strong>Select All</strong>, or manually select the forms you want to upload by ticking the checkbox.</li>
+            <li>Tap <strong>Send Selected</strong> to submit the forms to the server.</li>
+          </ol>
+          <p>To verify successful upload, go to the main menu and select <strong>Sent</strong>. You will see all forms sent to the server, along with their synchronization date.</p>
+        `
+      },
+
+      sendAuto: {
+        title: "Sending finalized forms to the server",
+        content: `
+          <p>With auto send enabled, finalized forms are sent to the server automatically. You do not need to open <strong>Ready to send</strong> or manually upload finalized forms.</p>
+          <p>If the device is connected to the internet when the form is completed, it will be sent immediately. If the device is offline, the form will remain queued and will be sent automatically when an internet connection becomes available.</p>
+          <p>To verify successful upload, go to the main menu and select <strong>Sent</strong>. You will see all forms sent to the server, along with their synchronization date.</p>
+        `
+      },
+
+      updatesManual: {
+        title: "Retrieving form updates",
+        content: `
+          <p>When changes are made to a data collection form, you will need to retrieve the updates in KoboCollect while connected to the internet.</p>
+          <p>Download new versions of a form by tapping <strong>Download form</strong>, selecting the form(s) to update, and tapping <strong>Get Selected</strong>.</p>
+        `
+      },
+
+      updatesPreviouslyDownloadedAuto: {
+        title: "Retrieving form updates",
+        content: `
+          <p>When one or more forms previously downloaded to the device have an update available, the updated version will download automatically at the frequency configured in the project settings.</p>
+          <p>If you need to force an update to ensure you are working with the latest version, tap <strong>Download form</strong>, select the form(s) to update, and tap <strong>Get Selected</strong>.</p>
+        `
+      },
+
+      updatesPreviouslyDownloadedNotify: {
+        title: "Retrieving form updates",
+        content: `
+          <p>When one or more forms previously downloaded to the device have an update available, KoboCollect will notify you at the frequency configured in the project settings. The update will not download automatically.</p>
+          <p>To retrieve the update, tap <strong>Download form</strong>, select the form(s) to update, and tap <strong>Get Selected</strong>.</p>
+        `
+      },
+
+      updatesExactlyMatchServer: {
+        title: "Retrieving form updates",
+        content: `
+          <p>When the project is set to exactly match the server, all forms shared with the account are automatically downloaded and updated based on changes to the server. KoboCollect checks for updates at the frequency configured in the project settings.</p>
+          <p>If you need to force an update to ensure you are working with the latest version, tap <strong>Start new form</strong> and tap the refresh button in the top right corner.</p>
+        `
+      }
+    };
+
+    const SCENARIOS = {
+      instructions1: {
+        title: "Default settings",
+        blocks: [
+          "downloadManualDefault",
+          "collectFinalize",
+          "editDraftFinalize",
+          "sendManual",
+          "updatesManual"
+        ]
+      },
+
+      instructions2: {
+        title: "Default form download + auto send",
+        blocks: [
+          "downloadManualDefault",
+          "collectSend",
+          "editDraftSend",
+          "sendAuto",
+          "updatesManual"
+        ]
+      },
+
+      instructions3: {
+        title: "Previously downloaded forms only + Automatic download + Auto send off",
+        blocks: [
+          "downloadPreviouslyDownloadedAuto",
+          "collectFinalize",
+          "editDraftFinalize",
+          "sendManual",
+          "updatesPreviouslyDownloadedAuto"
+        ]
+      },
+
+      instructions4: {
+        title: "Previously downloaded forms only + No Automatic download + Auto send off",
+        blocks: [
+          "downloadPreviouslyDownloadedNotify",
+          "collectFinalize",
+          "editDraftFinalize",
+          "sendManual",
+          "updatesPreviouslyDownloadedNotify"
+        ]
+      },
+
+      instructions5: {
+        title: "Previously downloaded forms only + Automatic download + Auto send",
+        blocks: [
+          "downloadPreviouslyDownloadedAuto",
+          "collectSend",
+          "editDraftSend",
+          "sendAuto",
+          "updatesPreviouslyDownloadedAuto"
+        ]
+      },
+
+      instructions6: {
+        title: "Previously downloaded forms only + No Automatic download + Auto send",
+        blocks: [
+          "downloadPreviouslyDownloadedNotify",
+          "collectSend",
+          "editDraftSend",
+          "sendAuto",
+          "updatesPreviouslyDownloadedNotify"
+        ]
+      },
+
+      instructions7: {
+        title: "Exactly match server + Auto send off",
+        blocks: [
+          "downloadExactlyMatchServer",
+          "collectFinalizeExactlyMatchServer",
+          "editDraftFinalize",
+          "sendManual",
+          "updatesExactlyMatchServer"
+        ]
+      },
+
+      instructions8: {
+        title: "Exactly match server + Auto send",
+        blocks: [
+          "downloadExactlyMatchServer",
+          "collectSendExactlyMatchServer",
+          "editDraftSend",
+          "sendAuto",
+          "updatesExactlyMatchServer"
+        ]
+      }
+    };
+
+    function isAutoSendEnabled(autoSend) {
+      return autoSend === "wifiOnly" || autoSend === "cellularOnly" || autoSend === "wifiOrCellular";
+    }
+
+    function getSelectedValue(form, name) {
+      const selected = form.querySelector(`input[name="${name}"]:checked`);
+      return selected ? selected.value : null;
+    }
+
+    function setRequiredForCustomQuestions(isRequired) {
+      const customInputs = document.querySelectorAll("#customSettingsQuestions input");
+      customInputs.forEach(input => {
+        input.required = isRequired;
+      });
+    }
+
+    function setRequiredForAutomaticDownload(isRequired) {
+      const inputs = document.querySelectorAll('input[name="automaticDownload"]');
+      inputs.forEach(input => {
+        input.required = isRequired;
+      });
+    }
+
+    function clearRadioGroup(name) {
+      document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+        input.checked = false;
+      });
+    }
+
+    function determineScenario(settings) {
+      if (settings.defaultSettings === "yes") {
+        return "instructions1";
+      }
+
+      if (settings.blankFormUpdateMode === "manual") {
+        return isAutoSendEnabled(settings.autoSend) ? "instructions2" : "instructions1";
+      }
+
+      if (settings.blankFormUpdateMode === "previouslyDownloaded") {
+        if (settings.automaticDownload === "yes" && settings.autoSend === "off") {
+          return "instructions3";
+        }
+
+        if (settings.automaticDownload === "no" && settings.autoSend === "off") {
+          return "instructions4";
+        }
+
+        if (settings.automaticDownload === "yes" && isAutoSendEnabled(settings.autoSend)) {
+          return "instructions5";
+        }
+
+        if (settings.automaticDownload === "no" && isAutoSendEnabled(settings.autoSend)) {
+          return "instructions6";
+        }
+      }
+
+      if (settings.blankFormUpdateMode === "exactlyMatchServer") {
+        return isAutoSendEnabled(settings.autoSend) ? "instructions8" : "instructions7";
+      }
+
+      return null;
+    }
+
+    function renderScenario(scenarioKey, settings) {
+      const scenario = SCENARIOS[scenarioKey];
+      const output = document.getElementById("instructionsOutput");
+      const summary = document.getElementById("summary");
+
+      const automaticDownloadLabel = settings.blankFormUpdateMode === "previouslyDownloaded"
+        ? LABELS.automaticDownload[settings.automaticDownload]
+        : LABELS.automaticDownload.notApplicable;
+
+      summary.innerHTML = `
+        <h3>Selected scenario</h3>
+        <ul>
+          <li><strong>Generated instructions:</strong> ${scenario.title}</li>
+          <li><strong>Form management settings:</strong> ${LABELS.defaultSettings[settings.defaultSettings]}</li>
+          ${settings.defaultSettings === "no" ? `
+            <li><strong>Blank form update mode:</strong> ${LABELS.blankFormUpdateMode[settings.blankFormUpdateMode]}</li>
+            <li><strong>Automatic download:</strong> ${automaticDownloadLabel}</li>
+            <li><strong>Auto send:</strong> ${LABELS.autoSend[settings.autoSend]}</li>
+          ` : ""}
+        </ul>
+      `;
+
+      const blocks = scenario.blocks.map(blockKey => {
+        const block = INSTRUCTION_BLOCKS[blockKey];
+        return `
+          <section class="section">
+            <h3>${block.title}</h3>
+            ${block.content}
+          </section>
+        `;
+      }).join("");
+
+      output.innerHTML = `
+        <h2>Instructions for data collectors</h2>
+        <div class="notice success">
+          <strong>Scenario:</strong> ${scenario.title}
+        </div>
+        ${blocks}
+      `;
+
+      document.getElementById("resultCard").classList.remove("hidden");
+      document.getElementById("copyStatus").classList.add("hidden");
+      document.getElementById("resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function getPlainTextInstructions() {
+      const output = document.getElementById("instructionsOutput");
+      return output.innerText.trim();
+    }
+
+    const form = document.getElementById("settingsForm");
+    const customSettingsQuestions = document.getElementById("customSettingsQuestions");
+    const automaticDownloadQuestion = document.getElementById("automaticDownloadQuestion");
+
+    form.addEventListener("change", event => {
+      if (event.target.name === "defaultSettings") {
+        const usingDefaults = event.target.value === "yes";
+
+        customSettingsQuestions.classList.toggle("hidden", usingDefaults);
+        setRequiredForCustomQuestions(!usingDefaults);
+
+        if (usingDefaults) {
+          clearRadioGroup("blankFormUpdateMode");
+          clearRadioGroup("automaticDownload");
+          clearRadioGroup("autoSend");
+          automaticDownloadQuestion.classList.add("hidden");
+          setRequiredForAutomaticDownload(false);
+        }
+      }
+
+      if (event.target.name === "blankFormUpdateMode") {
+        const needsAutomaticDownload = event.target.value === "previouslyDownloaded";
+
+        automaticDownloadQuestion.classList.toggle("hidden", !needsAutomaticDownload);
+        setRequiredForAutomaticDownload(needsAutomaticDownload);
+
+        if (!needsAutomaticDownload) {
+          clearRadioGroup("automaticDownload");
+        }
+      }
+    });
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const settings = {
+        defaultSettings: getSelectedValue(form, "defaultSettings"),
+        blankFormUpdateMode: getSelectedValue(form, "blankFormUpdateMode"),
+        automaticDownload: getSelectedValue(form, "automaticDownload"),
+        autoSend: getSelectedValue(form, "autoSend")
+      };
+
+      const scenarioKey = determineScenario(settings);
+
+      if (!scenarioKey) {
+        alert("Please answer all required questions.");
+        return;
+      }
+
+      renderScenario(scenarioKey, settings);
+    });
+
+    document.getElementById("resetButton").addEventListener("click", () => {
+      form.reset();
+      customSettingsQuestions.classList.add("hidden");
+      automaticDownloadQuestion.classList.add("hidden");
+      document.getElementById("resultCard").classList.add("hidden");
+      setRequiredForCustomQuestions(false);
+      setRequiredForAutomaticDownload(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.getElementById("copyButton").addEventListener("click", async () => {
+      const text = getPlainTextInstructions();
+      const copyStatus = document.getElementById("copyStatus");
+
+      try {
+        await navigator.clipboard.writeText(text);
+        copyStatus.classList.remove("hidden");
+        setTimeout(() => copyStatus.classList.add("hidden"), 2500);
+      } catch (error) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        copyStatus.classList.remove("hidden");
+        setTimeout(() => copyStatus.classList.add("hidden"), 2500);
+      }
+    });
+
+    document.getElementById("printButton").addEventListener("click", () => {
+      window.print();
+    });
+
+    setRequiredForCustomQuestions(false);
+    setRequiredForAutomaticDownload(false);
+  </script>
+</body>
+</html>
